@@ -1,0 +1,31 @@
+---
+title: "assignment-1"
+author: "Diane DeOcampo"
+date: "8/30/2019"
+output: html_document
+---
+
+## Getting The Data
+This dataset is coming from the agaricus-lepiota.data file.
+
+```{r getdata}
+mushroom_data <- read.csv("agaricus-lepiota.data",
+                          header = FALSE)
+```
+
+## R Markdown
+
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
