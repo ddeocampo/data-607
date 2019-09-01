@@ -6,26 +6,63 @@ output: html_document
 ---
 
 ## Getting The Data
-This dataset is coming from the agaricus-lepiota.data file.
+This dataset is coming from the agaricus-lepiota.data file and is put into the dataframe mushroom_data. Headers are then added to the dataframe. After that, a subset of mushroom_data is made into the df sub_mushroom_data.
 
 ```{r getdata}
 mushroom_data <- read.csv("agaricus-lepiota.data",
                           header = FALSE)
+colnames(mushroom_data) <- c("classes",
+                             "cap-shape",
+                             "cap-surface",
+                             "cap-color",
+                             "bruises",
+                             "odor",
+                             "gill-attachment",
+                             "gill-spacing",
+                             "gill-size",
+                             "gill-color",
+                             "stalk-shape",
+                             "stalk-root",
+                             "stalk-surface-above-ring",
+                             "stalk-surface-below-ring",
+                             "stalk-color-above-ring",
+                             "stalk-color-below-ring",
+                             "veil-type",
+                             "viel-color",
+                             "ring-number",
+                             "ring-type",
+                             "spore-print-color",
+                             "population",
+                             "habitat")
+sub_mushroom_data <- mushroom_data[c(1:3,19,23)]
+
 ```
 
-## R Markdown
+## Replacing Abbreviations
+```{r renaming}
+levels(sub_mushroom_data$classes)[levels(sub_mushroom_data$classes) == "e"] <- "edible"
+levels(sub_mushroom_data$classes)[levels(sub_mushroom_data$classes) == "p"] <- "poisonous"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "b"] <- "bell"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "c"] <- "conical"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "x"] <- "convex"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "f"] <- "flat"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "k"] <- "knobbed"
+levels(sub_mushroom_data$`cap-shape`)[levels(sub_mushroom_data$`cap-shape`) == "s"] <- "sunken"
 
+levels(sub_mushroom_data$`cap-surface`)[levels(sub_mushroom_data$`cap-surface`) == "f"] <- "fibrous"
+levels(sub_mushroom_data$`cap-surface`)[levels(sub_mushroom_data$`cap-surface`) == "g"] <- "grooves"
+levels(sub_mushroom_data$`cap-surface`)[levels(sub_mushroom_data$`cap-surface`) == "y"] <- "scaly"
+levels(sub_mushroom_data$`cap-surface`)[levels(sub_mushroom_data$`cap-surface`) == "s"] <- "smooth"
 
-```{r cars}
-summary(cars)
+levels(sub_mushroom_data$`ring-number`)[levels(sub_mushroom_data$`ring-number`) == "n"] <- "none"
+levels(sub_mushroom_data$`ring-number`)[levels(sub_mushroom_data$`ring-number`) == "o"] <- "one"
+levels(sub_mushroom_data$`ring-number`)[levels(sub_mushroom_data$`ring-number`) == "t"] <- "two"
+
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "g"] <- "grasses"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "l"] <- "leaves"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "m"] <- "meadows"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "p"] <- "paths"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "u"] <- "urban"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "w"] <- "waste"
+levels(sub_mushroom_data$habitat)[levels(sub_mushroom_data$habitat) == "d"] <- "woods"
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
