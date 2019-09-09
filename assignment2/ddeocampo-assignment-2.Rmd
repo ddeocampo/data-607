@@ -1,0 +1,69 @@
+---
+title: "ddeocampo-assignment-2"
+author: "Diane DeOcampo"
+date: "9/8/2019"
+output: html_document
+---
+
+```{r setup}
+library(RMySQL)
+```
+
+# connect to mysql db
+
+```{r dbconnection}
+dbuser <- 'data607'
+dbpassword <- 'password1!'
+db_name <- 'movies'
+db_table <- 'rankings'
+db_host <- '127.0.0.1'
+db_port <- 3306
+mydb <-  dbConnect(MySQL(), user = dbuser, password = dbpassword, dbname = db_name, host = db_host, port = db_port)
+```
+
+# Get rankings data from mysql
+```{r getdata}
+rs = dbSendQuery(mydb, "select * from rankings")
+data = fetch(rs, n=-1)
+```
+
+# make vectors of ranking of people who have seen the movie (ie non-null values) in addition to how many people have seen the movie
+```{r vectors}
+data_rows = nrow(data)
+dumbo_scores <- na.omit(data[, "dumbo_2019"])
+dumbo_seen <- length(dumbo_scores)
+aladdin_scores <- na.omit(data[, "aladdin_2019"])
+aladdin_seen <- length(aladdin_scores)
+lionking_scores <- na.omit(data[, "lionking_2019"])
+lionking_seen <- length(lionking_scores)
+toystory4_scores <- na.omit(data[, "toystory4"])
+toystory4_seen <- length(toystory4_scores)
+ralphbreaks_scores <- na.omit(data[, "ralphbreaks"])
+ralphbreaks_seen <- length(ralphbreaks_scores)
+incredible2_scores <- na.omit(data[, "incredibles2"])
+incredible2_seen <- length(incredible2_scores)
+```
+
+# calculate percentage of survey takers to have seen the movie then calculate avg score
+```{r seen percentage}
+titles <- c("Dumbo(2019)","Aladdin(2019)","The Lion King (2019)","Toy Story 4","Ralph Breaks The Internet","The Incredibles 2")
+perc_seen <- c((dumbo_seen/data_rows),(aladdin_seen/data_rows),(lionking_seen/data_rows),(toystory4_seen/data_rows),(ralphbreaks_seen/data_rows),(incredible2_seen/data_rows))
+avg_score <- c(mean(dumbo_scores),mean(aladdin_scores),mean(lionking_scores),mean(toystory4_scores),mean(ralphbreaks_scores),mean(incredible2_scores))
+calc_df <- data.frame("Movie Titles" = titles, "Percentage Seen" = perc_seen, "Avg Score" = avg_score)
+```
+
+# Display Calculations
+```{r calcs, results='asis'}
+print(calc_df)
+```
+
+# Compare Avg Score of movies via bar chart
+```{r barplot, results='asis'}
+barplot(calc_df$Avg.Score, names = calc_df$Movie.Titles, main="Avg Score of Movies", xlab="Movie", las=2)
+```
+
+# Plot Percentage Seen
+```{r pieplot, results='asis'}
+pie(c(dumbo_seen,(data_rows-dumbo_seen)), labels = c("Seen Dumbo","Did Not See Dumbo"), main="Survey Takers Who Saw Dumbo (2019)")
+pie(c(toystory4_seen,(data_rows-toystory4_seen)), labels = c("Seen Toy Story 4","Did Not See Toy Story 4"), main="Survey Takers Who Saw Toy Story 4")
+```
