@@ -1,0 +1,108 @@
+---
+title: "ddeocampo-assignment-3"
+author: "Diane DeOcampo"
+date: "9/11/2019"
+output: html_document
+---
+
+# Question 3
+
+```{r setup-q3}
+#needed library
+library(stringr)
+
+#raw data from ch 8
+raw.data <-"555-1239Moe Szyslak(636) 555-0113Burns, C. Montgomery555-6542Rev. Timothy Lovejoy555 8904Ned Flanders636-555-3226Simpson, Homer5553642Dr. Julius Hibbert"
+
+#get only names from raw data
+name <- unlist(str_extract_all(raw.data, "[[:alpha:]., ]{2,}"))
+```
+
+### 3.1
+##### Rearrange the vector so that all elements conform to the standard first_name last_name
+
+```{r std-naming}
+#transform names containing a comma to first_name last_name format
+names_with_comma <- name[which(str_detect(name, ","))]
+comma_less <- unlist(strsplit(names_with_comma, ", "))
+last_names <- comma_less[c(TRUE, FALSE)]
+first_names <- comma_less[c(FALSE, TRUE)]
+new_names <- paste(first_names, last_names, sep = " ")
+
+#rejoin back into vector with names that did not contain a comma aka already in standard form
+std_names <- name[! name %in% names_with_comma]
+std_names <- c(std_names, new_names)
+std_names
+```
+
+### 3.2
+##### Construct logical vector indicating whether a charater has a title
+
+```{r title_detect}
+with_title <- std_names[str_detect(std_names, "[:alpha:]{2,}\\.")]
+#titles normally have more than 1 charater before the period
+with_title
+```
+
+### 3.3
+##### Construct logical vector indicating whether a charater has a second name
+
+```{r second_names}
+with_2nd_name <- std_names[str_detect(std_names, "[A-Z]\\.[:blank:]\\w{1,}[:blank:]\\w{1,}")]
+#Assuming the requirments of a second name would have to have a letter before a period and a name followed by a last name
+with_2nd_name
+```
+
+# Question 4
+
+### 4.1
+##### [0-9]+\\$
+This would return any part of a string that contains one or more digits followed by a "$".
+```{r 4.1}
+test_strings1 <- c("helloworld1111$","m1n3cr4f7$","$1337","LUL")
+result1 <- unlist(str_extract_all(test_strings1, pattern = "[0-9]+\\$" ))
+result1
+```
+
+### 4.2
+##### \\b[a-z]{1,4}\\b
+This would return a part of a string if it contains a word of at least one lowercase letter with a maximum of 4 lowercase letters. This word would only contain lowercase letters.
+```{r 4.2}
+test_strings2 <- c("bRuh","g2g","lul","lots of puppers")
+result2 <- unlist(str_extract_all(test_strings2, pattern = "\\b[a-z]{1,4}\\b" ))
+result2
+```
+
+### 4.3
+##### .*?\\.txt$
+this would return any string that ends with ".txt".
+```{r 4.3}
+test_strings3 <- c("issa file.txt",".txt","hw3.txt","nota.txt test")
+result3 <- unlist(str_extract_all(test_strings3, pattern = ".*?\\.txt$" ))
+result3
+```
+
+### 4.4
+##### \\d{2}/\\d{2}/\\d{4}
+This will return part of the strings that have 2 sets of 2 digits followed by a set of 4 digits separated by slashes "/"
+```{r 4.4}
+test_strings4 <- c("09/15/2019","2/20/1992","yesterday was 09/14/2019","23/03/1234 wow")
+result4 <- unlist(str_extract_all(test_strings4, pattern = "\\d{2}/\\d{2}/\\d{4}" ))
+result4
+```
+
+### 4.5
+##### <(.+?)>.+?</\\1>
+This would return strings that contain <> with any charaters between the symbols. After that, any charaters. There is another set of <> but with a / in the middle plus the string that matches what's within the parentheses.
+```{r 4.5}
+test_strings5 <- c("<t>Kappa</t>","<asdf>1234asdf</asdf>","qwerty<tag>hihi</tag>","<mis>oh</match>")
+result5 <- unlist(str_extract_all(test_strings5, pattern = "<(.+?)>.+?</\\1>" ))
+result5
+```
+
+# Question 9
+```{r decode}
+secret <- "clcopCow1zmstc0d87wnkig7OvdicpNuggvhryn92Gjuwczi8hqrfpRxs5Aj5dwpn0TanwoUwisdij7Lj8kpf03AT5Idr3coc0bt7yczjatOaootj55t3Nj3ne6c4Sfek.r1w1YwwojigOd6vrfUrbz2.2bkAnbhzgv4R9i05zEcrop.wAgnb.SqoU65fPa1otfb7wEm24k6t3sR9zqe5fy89n6Nd5t9kc4fE905gmc4Rgxo5nhDk!gr"
+msg <- str_replace_all(paste(unlist(str_extract_all(secret, "[[:upper:].]{1,}")), collapse = ""), "\\.", " ")
+msg
+```
