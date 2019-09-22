@@ -13,12 +13,14 @@ library(stringr)
 library(plyr)
 ```
 
-#### Read from txt file and import
+### Read from txt file and import
+skipping 4 because of headers
 ```{r import}
 importtxt <- read_lines("tournamentinfo.txt", skip=4)
 ```
 
-#### Create empty data frame
+### Create empty data frame
+playerbase is a data frame all players who participated
 ```{r dataframe}
 playerbase <- data.frame(PairNum=integer(),
                       PlayerName=character(),
@@ -27,17 +29,19 @@ playerbase <- data.frame(PairNum=integer(),
                       PlayerPreRating=integer())
 ```
 
-#### read, parse, load into df
+### read, parse, load into df
+using regex, we read and load data into the playerbase df
 ```{r parse}
-pair_num <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "[:digit:]{1,}[:blank:](?=\\|)")), pattern = "[:digit:]"))
+pair_num <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "[:digit:]{1,}[:blank:](?=\\|)")), pattern = "[:digit:]{1,}"))
 
-player_names <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "(?<=\\|)[:space:][:alpha:]{1,}[:space:][:alpha:]{1,}[:space:][:alpha:]{0,}[:space:]{1,}(?=\\|)")), pattern = "[:alpha:]{1,}[:space:][:alpha:]{1,}([:blank:][:alpha:]{1,})?"))
+opo_tmp <- unlist(str_extract_all(importtxt, pattern ="(?<=\\|)[:blank:][:alpha:]{1,}[[:blank:](([:alpha:]*){1,}|([:alpha:]*\\-[:alpha:]*){1,}]*(?=\\|)"))
+player_names <- trimws(unlist(str_extract(opo_tmp, pattern = "[:alpha:]{1,}[:blank:][:alpha:]+[[:blank:](([:alpha:]+)|([:alpha:]+\\-[:alpha:]+))]*")), "r")
 
 player_state <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "[:space:][:upper:]{2}[:blank:](?=\\|)")), pattern = "[:alpha:]{2}"))
 
 total_points <- unlist(str_extract_all(importtxt, pattern = "[:digit:]\\.[:digit:]"))
 
-player_prerating <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "R\\:[:blank:][:digit:]{1,4}")), pattern = "[:digit:]{1,4}"))
+player_prerating <- unlist(str_extract(unlist(str_extract_all(importtxt, pattern = "R\\:[:blank:]+\\d{1,4}")), pattern = "[:digit:]{1,4}"))
 
 playerbase <- data.frame(pair_num,
                          player_names,
@@ -46,7 +50,8 @@ playerbase <- data.frame(pair_num,
                          player_prerating)
 ```
 
-#### get player opponents
+### get player opponents
+opponentbase extracts the list of pair numbers of the oppoents that a single player went against and completed the match (win, draw, or lose)
 ```{r opponentbase}
 tmp <- str_extract_all(importtxt, pattern = "(?<=\\|)(W|D|L)[:blank:]+[:digit:]+(?=\\|)")
 tmp <- tmp[lapply(tmp,length)>0]
@@ -56,21 +61,33 @@ opponentbase <- list(pair_num,opponent_num)
 
 ```
 
-#### 
-```{r testing}
-oppo_played <- playerbase[unlist(opponentbase[[2]][1]),]
-oppo_prerankings <- oppo_played$player_prerating
-avg_oppopreranking <- mean(oppo_prerankings[!is.na(oppo_prerankings)])
+### get opponents ratings
+avg_oppopreranking_all calculates the average rating of the all opponents that a player went up against
+```{r avgopporatings}
+avg_oppopreranking_all <- vector('integer')
+
+for (x in unlist(playerbase[[1]])) {
+oppo_played <- playerbase[unlist(opponentbase[[2]][as.integer(x)]),]
+oppo_prerankings <- strtoi(as.character(oppo_played$player_prerating))
+avg_oppopreranking <- round(mean(oppo_prerankings), digits = 0)
+
+avg_oppopreranking_all <- append(avg_oppopreranking_all,as.integer(avg_oppopreranking), after = length(avg_oppopreranking_all))
+}
+```
+
+### build export dataframe
+prep data for exporting
+```{r prepexport}
+export_df <- data.frame(PlayerName = player_names,
+                        PlayerState = player_state,
+                        TotalPoints = format(total_points, nsmall = 1),
+                        PlayerPreRating = as.integer(player_prerating),
+                        AvgPreRating_Opponents = avg_oppopreranking_all)
 
 ```
 
-```{r testing 2}
-opo_tmp <- unlist(str_extract_all(importtxt, pattern ="(?<=\\|)[:blank:][:alpha:]{1,}[[:blank:](([:alpha:]*){1,}|([:alpha:]*\\-[:alpha:]*){1,}]*(?=\\|)"))
-
-player_names <- unlist(str_extract(opo_tmp, pattern = "[:alpha:]{1,}[:blank:]([:alpha:]+)"))
-player_names
-
+### write to csv
+export the data frame as 
+```{r export}
+write.csv(export_df,'results.csv')
 ```
-
-#### write to csv
-write.csv(healthstudy,'healthstudy2.csv')
