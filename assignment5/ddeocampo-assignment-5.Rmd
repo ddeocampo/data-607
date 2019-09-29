@@ -6,7 +6,7 @@ output: html_document
 ---
 
 # Assignment 5
-```{r setup}
+```{r setup, message=FALSE, warning=FALSE}
 library(tidyr)
 library(dplyr)
 library(zoo)
@@ -18,7 +18,7 @@ importcsv <- read.csv("airline-delay.csv", header = TRUE, stringsAsFactors = FAL
 ```
 
 ### transform data
-```{r cleanse}
+```{r cleanse, warning=FALSE}
 tmp_df <- importcsv[complete.cases(importcsv), ]#remove null rows
 names(tmp_df)[1] <- "Airline" #rename 1st column
 names(tmp_df)[2] <- "Status" #rename 2nd column
@@ -44,5 +44,5 @@ counts_tot <- c(sum(delayed_data$Los.Angeles), sum(delayed_data$Phoenix), sum(de
 barplot(counts_tot, main="Total Delayed Flights", xlab="Number of Flights by City", names.arg = names(tmp_df[3:7]), col=c("yellow","red","blue","green","purple"))
 
 counts_airline <- table(delayed_data$Los.Angeles, delayed_data$Phoenix)
-barplot(t(as.matrix(delayed_data[3:7])),beside=TRUE, main="Total Delayed Flights", xlab="Number of Flights by City", col=c("yellow","red","blue","green","purple"), names.arg = delayed_data$Airline, legend = names(delayed_data[3:7]))
+barplot(t(as.matrix(delayed_data[3:7])),beside=TRUE, main="Delayed Flights", xlab="Number of Flights by Airline", col=c("yellow","red","blue","green","purple"), names.arg = delayed_data$Airline, legend = names(delayed_data[3:7]))
 ```
