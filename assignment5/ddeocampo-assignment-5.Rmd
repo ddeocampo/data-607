@@ -1,0 +1,48 @@
+---
+title: "ddeocampo-wk5-assignment"
+author: "Diane DeOcampo"
+date: "September 26, 2019"
+output: html_document
+---
+
+# Assignment 5
+```{r setup, message=FALSE, warning=FALSE}
+library(tidyr)
+library(dplyr)
+library(zoo)
+```
+
+### Import data
+```{r import}
+importcsv <- read.csv("airline-delay.csv", header = TRUE, stringsAsFactors = FALSE)
+```
+
+### transform data
+```{r cleanse, warning=FALSE}
+tmp_df <- importcsv[complete.cases(importcsv), ]#remove null rows
+names(tmp_df)[1] <- "Airline" #rename 1st column
+names(tmp_df)[2] <- "Status" #rename 2nd column
+
+#turn factor to str
+i <- sapply(tmp_df, is.factor)
+tmp_df[i] <- lapply(tmp_df[i], as.character)
+
+#remaining empty strings to null
+tmp_df <- mutate_all(tmp_df, funs(na_if(.,"")))
+
+#Copy down airline names, overwriting NAs
+tmp_df$Airline <- na.locf(tmp_df$Airline)
+
+tmp_df
+```
+
+### compare arrival delays
+```{r graph}
+delayed_data <- tmp_df[which(tmp_df$Status=='delayed'),]
+
+counts_tot <- c(sum(delayed_data$Los.Angeles), sum(delayed_data$Phoenix), sum(delayed_data$San.Diego), sum(delayed_data$San.Francisco), sum(delayed_data$Seattle))
+barplot(counts_tot, main="Total Delayed Flights", xlab="Number of Flights by City", names.arg = names(tmp_df[3:7]), col=c("yellow","red","blue","green","purple"))
+
+counts_airline <- table(delayed_data$Los.Angeles, delayed_data$Phoenix)
+barplot(t(as.matrix(delayed_data[3:7])),beside=TRUE, main="Delayed Flights", xlab="Number of Flights by Airline", col=c("yellow","red","blue","green","purple"), names.arg = delayed_data$Airline, legend = names(delayed_data[3:7]))
+```
