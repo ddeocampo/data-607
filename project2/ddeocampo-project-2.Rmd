@@ -1,0 +1,50 @@
+---
+title: "ddeocampo-project-2"
+author: "Diane DeOcampo"
+date: "10/6/2019"
+output: html_document
+---
+
+# Project 2
+
+```{r setup}
+library(rio)
+library(stringr)
+library(tidyr)
+library(dplyr)
+```
+
+```{r convertToCSV}
+#convert("datasets/edu-25plus.xls","datasets/edu-25plus.csv")
+convert("datasets/candy.xlsx","datasets/candy.csv")
+```
+
+## Candy Dataset
+###In Git: dataset/candy.xlsx
+```{r importCandy}
+importCandyData <- read.csv("datasets/candy.csv", na.strings = "")
+tmpCandyData <- importCandyData[, c(3:109)]
+```
+```{r renameCandyCol}
+candyColNames <- names(tmpCandyData)
+candyColNames <- substr(candyColNames, 5, nchar(candyColNames))
+
+candyColNames <- str_trim(str_replace_all(candyColNames, "\\.", " "), side = "left")
+colnames(tmpCandyData)<- candyColNames
+```
+```{r cleanCandy}
+tmpCandyData2 <- tmpCandyData[, c(1,2,14:16,18,22,26)] #sample size candybar data
+tmpCandyData3 <- drop_na(tmpCandyData2)
+tmpCandyData4 <- transform(tmpCandyData3, AGE = as.integer(AGE))
+tmpCandyData5 <- data.frame(lapply(tmpCandyData4, as.character), stringsAsFactors=FALSE)
+```
+
+## NYC Air bnb
+###In Git: dataset/AB_NYC_2019.csv
+```{r importAirbnb}
+importAirbnb <- read.csv("datasets/AB_NYC_2019.csv", na.strings = "", header = TRUE)
+tmpAirbnb <- drop_na(importAirbnb)
+
+```
+
+## EdFi
