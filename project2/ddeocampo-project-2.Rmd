@@ -6,12 +6,13 @@ output: html_document
 ---
 
 # Project 2
-
-```{r setup}
+Used different file imputs to practice on (xlsx, csv, xml)
+```{r setup,message=FALSE,results='hide',warning=FALSE}
 library(rio)
 library(stringr)
 library(tidyr)
 library(dplyr)
+library(XML)
 ```
 
 ```{r convertToCSV}
@@ -41,10 +42,36 @@ tmpCandyData5 <- data.frame(lapply(tmpCandyData4, as.character), stringsAsFactor
 
 ## NYC Air bnb
 ###In Git: dataset/AB_NYC_2019.csv
-```{r importAirbnb}
+```{r cleanAirbnb}
 importAirbnb <- read.csv("datasets/AB_NYC_2019.csv", na.strings = "", header = TRUE)
 tmpAirbnb <- drop_na(importAirbnb)
 
 ```
 
 ## EdFi
+###In Git: dataset/StudentEnrollment.xml
+Note: Only using Section Reference to parse data
+```{r importEdFi}
+importEdFi <- xmlToDataFrame("datasets/StudentEnrollment.xml")
+
+```
+```{r cleanEdFi}
+tmpEdFi <- importEdFi[,c(1,6)]
+tmpEdFi <- drop_na(tmpEdFi)
+
+#SectionNumber
+sectionNum <- as.numeric(str_extract_all(tmpEdFi$SectionReference, "[[:digit:]]{9}"))
+
+#SubjectType
+tmpsubjType <- as.character(str_extract(tmpEdFi$SectionReference, "[[:alpha:]]{2,5}\\-?([[:digit:]]{1}|[[:alpha:]]{2})"))
+subjType <- str_extract(tmpEdFi$SectionReference, "[[:alpha:]]{2,}")
+
+#SchoolYear
+schoolYear <- as.character(str_extract(tmpEdFi$SectionReference, "([[:digit:]]{4}\\-[[:digit:]]{4})"))
+
+#Semester
+tmpSemester <- as.character(str_extract(tmpEdFi$SectionReference, "[[:alpha:]]{4,6}[[:blank:]]+[[:alpha:]]{8}"))
+
+#construct df
+studentEnrollment <- data.frame(tmpEdFi$StudentReference,sectionNum,subjType,schoolYear,tmpSemester)
+```
