@@ -1,0 +1,20 @@
+<books>
+	<book>
+		<title>The Subtle Art of Not Giving a F*ck: A Counterintuitive Approach to Living a Good Life</title>
+		<author>Mark Manson</author>
+		<pubdate>09-13-2016</pubdate>
+		<publisher>Harper</publisher>
+	</book>
+	<book>
+		<title>The Road Back to You: An Enneagram Journey to Self-Discovery</title>
+		<author>Ian Morgan Cron and Suzanne Stabile</author>
+		<pubdate>10-04-2016</pubdate>
+		<publisher>IVP Books</publisher>
+	</book>
+	<book>
+		<title>The Nerdist Way: How to Reach the Next Level (In Real Life)</title>
+		<author>Chris Hardwick</author>
+		<pubdate>11-01-2011</pubdate>
+		<publisher>Berkley</publisher>
+	</book>
+</books>
