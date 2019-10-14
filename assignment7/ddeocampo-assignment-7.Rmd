@@ -1,0 +1,34 @@
+---
+title: "ddeocampo-assignment-7"
+author: "Diane DeOcampo"
+date: "10/13/2019"
+output: html_document
+---
+
+```{r setup}
+library(XML)
+library(RCurl)
+library(xml2)
+library(rjson)
+```
+
+## Reading HTML
+```{r readhtml}
+importbookhtml <- readHTMLTable("books.html", header = F)
+importbookhtml
+```
+
+## Reading XML
+```{r readxml}
+importbookxml <- xmlParse("books.xml")
+bookxml <- xmlToList(importbookxml)
+bookxml
+```
+
+## Reading JSON
+```{r readjson}
+importbookjson <- fromJSON(file = "books.json")
+importbookjson
+```
+
+The 3 data frames are not identical. Reading from XML and json would yield similar data frames with a list of chars, but from html, it is returning as a vector.
