@@ -1,0 +1,87 @@
+---
+title: "ddeocampo-project-4"
+author: "Diane DeOcampo"
+date: "11/17/2019"
+output: html_document
+---
+
+## Project 4
+Spam vs Ham Email Classification
+```{r setup}
+library("tm")
+library("SnowballC")
+library("stringr")
+library("wordcloud")
+library("RColorBrewer")
+library("quanteda")
+library("caret")
+library("naivebayes")
+```
+
+###Getting List of files
+```{r import}
+
+hamFiles <- list.files('./easy_ham')
+hamFiles_len <- length(hamFiles)
+hamCorpus <-Corpus(DirSource('./easy_ham'))
+
+spamFiles <- list.files('./spam')
+spamFiles_len <- length(spamFiles)
+spamCorpus <-Corpus(DirSource('./spam'))
+
+```
+
+###Cleansing Corpus
+```{r cleanse}
+# lowercase
+hamCorpus_clean <- tm_map(hamCorpus, tolower)
+spamCorpus_clean <- tm_map(spamCorpus, tolower)
+
+# remove numbers
+hamCorpus_clean <- tm_map(hamCorpus_clean, removeNumbers)
+spamCorpus_clean <- tm_map(spamCorpus_clean, removeNumbers)
+
+# remove puntuation
+hamCorpus_clean <- tm_map(hamCorpus_clean, removePunctuation)
+spamCorpus_clean <- tm_map(spamCorpus_clean, removePunctuation)
+
+# remove stopwords
+hamCorpus_clean <- tm_map(hamCorpus_clean, removeWords, c(stopwords(), "received", "sep"))
+spamCorpus_clean <- tm_map(spamCorpus_clean, removeWords, c(stopwords(),"received", "sep"))
+
+# remove whitespace
+hamCorpus_clean <- tm_map(hamCorpus_clean, stripWhitespace)
+spamCorpus_clean <- tm_map(spamCorpus_clean, stripWhitespace)
+
+# Convert into Doctument Term Matrix
+hamDTM <- DocumentTermMatrix(hamCorpus_clean)
+spamDTM <- DocumentTermMatrix(spamCorpus_clean)
+
+# Remove Spase Terms
+hamDTM <- removeSparseTerms(hamDTM, 0.10)
+spamDTM <- removeSparseTerms(spamDTM, 0.10)
+```
+
+###Plot Frequent Terms
+Ham
+```{r hamCloud}
+wordcloud(hamCorpus_clean, max.words = 50, random.order=FALSE)
+```
+
+Spam
+```{r spamCloud}
+wordcloud(spamCorpus_clean, max.words = 50, random.order=FALSE)
+```
+
+
+###Training and Testing Dataset
+```{r subset}
+sms_dtm_train <- hamDTM[1:2040,]
+sms_dtm_test <- hamDTM[2041:hamFiles_len,]
+
+sms_dtm_train_label <- hamDTM[1:2040,]$type
+sms_dtm_test_label <- hamDTM[2041:hamFiles_len,]$type
+
+
+```
+The training dataset is typically 80% of the data. The other 20% is for testing. We can use Naive Bayes classifiers, which are based on Bayes Theoram, to calulate a probability based on vaiables/inputs. Using those classifiers, we can use the predict using other datasets.
