@@ -1,0 +1,27 @@
+---
+title: "ddeocampo-assignment11"
+author: "Diane DeOcampo"
+date: "November 11, 2019"
+output: html_document
+---
+
+##Recommender Systems
+###Scenario Analysis
+Analyzing Twitch.tv's Recommended live channel's section on their front page:
+####Who are your target users?
+The target users of the Recommended Live Channel section are current named users/viewers of Twitch and non-named users/viewers. Twitch is a streaming video platform that provides a space for streamers to stream content that would be consumed by the users/viewers worldwide. Most of the content that is streamed centers around video game playthroughs, tournament viewing, and community building.
+####What are their key goals?
+For user to find channels/stream that they are not currently following/watching. When users find more channels to watch, that increases their time spent. More time spent on their platform can turn into more revenue for the platform in terms of ad revenue and paid subscriptions.
+####How can you help them accomplish their goals?
+For named users of Twitch, we can analyze the history of what streams the user watched and the channels the user is following and subscribed to to determine channels the user is not following to watch next.
+
+###Data Tagging and Profiling
+In order for profile a stream, a streamer must title the stream and label what game they are streaming. Based on the game the broadcaster is streaming, there are tags that are automatically associated with the stream. For instance, if a streamer is playing Fortnite, the tags "Shooter" and "Multiplayer" are automatically associated with the broadcaster based on a dictionary of game with their associated keywords. These tags are stored in a database where Twitch keeps records on what games they allow to be streamed on their platform. Other flags that can be associated with a broadcaster is what language they are using and if their stream is for mature audiences or family friendly. For that to be associated with a broadcaster, they would have to set those variables in their user settings.
+When a named user starts following channels, these keywords/tag get associated to their "viewers" profile that keeps track of what keywords most often appear based on the channels they follow and watch. The viewer profiles are also kept in a database.
+
+###Determining Recommendations
+Using these "viewer profiles" we can determine the most frequent keywords based on the data gathered on what channels they follow and currently watch. In turn, we can make lists of the top viewed channels based on keyword and form a recommendation list.
+Another way to determine recommendations is using the current follower list for a given channel. By comparing the usernames in each channel we can determine the percentage of shared viewership between two channels. Channels that share a high percentage can be recorded as a list to be associated with a channel's metadata. Then when a user is going to look at the recommended channels section, the channels there can be populated by channels that is not currently being followed and have a high percentage shared viewership with those that the user is already following.
+
+Additional Recommendations
+Other recommendations would be to look at the viewing history of the user. This history contains data on what games the user is watching. By inquiring what are the channel more frequently watched, we can determine what games the user are more susceptible to watching. Then we can pull what are channel the user is not following and what channels are the top viewed for that game.
