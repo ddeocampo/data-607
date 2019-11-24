@@ -1,0 +1,42 @@
+---
+title: "ddeocampo-assignment-12"
+author: "Diane DeOcampo"
+date: "11/23/2019"
+output: html_document
+---
+
+```{r setup}
+require(RMySQL)
+require(mongolite)
+```
+
+###Getting Data from MySQL
+
+```{r mysqlconnection}
+dbuser <- 'data607'
+dbpassword <- 'password1!'
+db_name <- 'breweries'
+db_table <- 'breweries_us'
+db_host <- '127.0.0.1'
+db_port <- 3306
+mydb <-  dbConnect(MySQL(), user = dbuser, password = dbpassword, dbname = db_name, host = db_host, port = db_port)
+```
+
+```{r mysqldata}
+rs = dbSendQuery(mydb, "select * from breweries_us")
+mysql_data = fetch(rs, n=-1)
+```
+
+###Transforming into NoSQL Mongodb
+
+``` {r tomongodb}
+my_collection = mongo(collection = "breweries_us", db = "breweries")
+my_collection$insert(mysql_data)
+```
+
+``` {r mongodbchecks}
+my_collection$count()
+my_collection$iterate()$one()
+```
+
+A NoSQL database has more flexibility than relational databases since there isn’t requirements in terms of defining relationships and other things like keys. NoSQL would be ideal for a “code first approach” when building an application. Relational databases would be ideal for “data first” approaches because of the schema mapping in involves upfront. In addition, relational databases support data integrity more than NoSQL databases.
