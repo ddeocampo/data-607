@@ -1,0 +1,52 @@
+---
+title: "tidyverse-ddeocampo"
+author: "Diane DeOcampo"
+date: "December 5, 2019"
+output: html_document
+---
+
+```{r setup}
+library(tidyverse)
+```
+
+#Create an Example
+###Dataset used: NFL Elo from FiveThirtyEight.com
+https://github.com/fivethirtyeight/data/tree/master/nfl-elo
+Purpose: Analyze the greatest team in the NFL, Houston Texans, data and ELO
+
+####Importing and Filtering NFL Elo data
+Filter/cleanse for Houston Texans data
+```{r extract}
+nfl_import <- read_csv("nfl_elo.csv")
+hou_data <- filter(nfl_import, team1 == 'HOU' | team2 == 'HOU')
+hou_data <- hou_data[, colSums(is.na(hou_data)) != nrow(hou_data)]
+hou_clean_data <- (hou_data %>% drop_na())
+hou_home_data <- filter(hou_clean_data, team1 == 'HOU')
+hou_away_data <- filter(hou_clean_data, team2 == 'HOU')
+```
+
+####Get Texans specific data
+```{r texansonly}
+home_stats <- select(hou_home_data, contains('1'), score2)
+home_stats$result <- if_else(home_stats$score1 > home_stats$score2, "W", "L")
+away_stats <- select(hou_away_data, contains('2'), score1)
+away_stats$result <- if_else(away_stats$score2 > away_stats$score1, "W", "L")
+```
+
+```{r houstats}
+stats1 <- select(home_stats, c(2,3,4,7))
+colnames(stats1) <- c("preelo", "probability", "postelo", "result")
+stats2 <- select(away_stats, c(2,3,4,7))
+colnames(stats2) <- c("preelo", "probability", "postelo", "result")
+
+hou_stats <- bind_rows(stats1, stats2)
+
+```
+
+```{r graphing}
+ggplot(hou_stats, aes(preelo,probability, colours = result)) + ggtitle("Pre Game Elo vs Probability on Winning") + geom_point(aes(colour = result))
+
+ggplot(hou_stats, aes(postelo,probability, colours = result)) + ggtitle("Post Game Elo vs Probability on Winning") + geom_point(aes(colour = result))
+```
+
+#Extend an Existing Example
